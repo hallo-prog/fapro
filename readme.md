@@ -12,9 +12,10 @@ Diese Anleitung beschreibt die Schritte zur Installation der FaPro Software, die
 ## Voraussetzungen
 - **PHP**: Version 8.1 oder höher
 - **Composer**: Aktuelle Version installiert
-- **Node.js und npm**: Für Frontend-Abhängigkeiten
-- **Datenbank**: MySQL, PostgreSQL oder eine andere von Symfony unterstützte Datenbank
+- **Datenbank**: MariaDb Datenbank
 - **Git**: Zum Klonen des Repositories
+- **Symfony**: Version 6.4
+
 
 ## Installationsschritte
 
