@@ -1,0 +1,12 @@
+twig:
+  globals:
+    sfBG: '#f2f7fb'
+    sfColorFormular: '#f3ede6'
+    sfColorText: '#454545'
+    sfColorLigth: '#996300'
+    sfColor: '#29712c'
+    sfColorDark: '#452607'
+    ownerLink: 'https://dinstleistung-software.de'
+    appTax: 19
+    appTemplate: 'tamplate_holzarbeit/'
+    appAssetPath: '%appassetpath%/'

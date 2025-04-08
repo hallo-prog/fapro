@@ -1,0 +1,40 @@
+{% extends('base.cat.html.twig') %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        window.addEventListener('scroll', () => {
+            document.body.style.setProperty('--scroll',window.pageYOffset / (document.body.offsetHeight - window.innerHeight));
+        }, false);
+    </script>
+{% endblock %}
+ {% block stylesheets %}
+     {{ parent() }}
+ {% endblock %}
+{% block body %}
+<div class="container m-5">
+    <div class="row p-2">
+        <div class="col-md-6" >
+            <h3>Lui está desaparecido desde el 14 de septiembre</h3>.
+            <p><span style="color: orangered">Nuestro querido gato Lui está desaparecido desde el 14 de septiembre. <br>
+                Está chipado y castrado y esperamos que en caso de emergencia se ponga en contacto con alguien que pueda llevarlo a un veterinario para que revise su chip.<br>
+                Lamentablemente aún no ha sucedido.<br><br>
+
+                Si ves un gato en tu jardín o cerca de tu casa que pueda ser Lui, ponte en contacto con nosotros.<br> Cualquier señal suya nos daría grandes esperanzas. Gracias por su atención y ayuda.</span>
+            </p>
+        </div>
+        <div class="col-md-6" >
+            <iframe src="https://www.google.com/maps/embed?pb=!1m21!1m12!1m3!1d3181.2565992682125!2d1.5924500188375914!3d41.2151019607435!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m6!3e6!4m0!4m3!3m2!1d41.2164182180596!2d1.5901546991656184!5e1!3m2!1sen!2ses!4v1733432340839!5m2!1sen!2ses" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </div>
+    <div class="row p-2">
+        <div class="col-md-6 p-3"style="box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px, rgba(0, 0, 0, 0.05) 0px 5px 10px;">
+        </div>
+        <div class="col-md-6 p-3" style="box-shadow: rgba(0, 0, 0, 0.15) 0 15px 25px, rgba(0, 0, 0, 0.05) 0 5px 10px;"><img style="width: -webkit-fill-available;" src="cat/lui2.jpeg" alt="Lui"></div>
+    </div>
+    <div class="row p-2">
+        <div class="col-md-6 p-3" style="box-shadow: rgba(0, 0, 0, 0.15) 0 15px 25px, rgba(0, 0, 0, 0.05) 0 5px 10px;"><img style="width: -webkit-fill-available;" src="cat/lui2.png" alt="Lui"></div>
+        <div class="col-md-6 p-3" style="box-shadow: rgba(0, 0, 0, 0.15) 0 15px 25px, rgba(0, 0, 0, 0.05) 0 5px 10px;"><img style="width: -webkit-fill-available;" src="cat/lui2.jpeg" alt="Lui"></div>
+    </div>
+</div>
+{% endblock %}
