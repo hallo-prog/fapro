@@ -185,6 +185,88 @@ Logs: `var/log/dev.log` (nicht committen).
 | `public/` | Webroot (index.php, Assets, Bilder) |
 | `var/` | Cache, Logs (lokal) |
 
+### 14.1 Domain Modell (vereinfachter Überblick)
+
+Hauptaggregate & Beziehungen (vereinfacht, nicht vollständig):
+
+```
+User 1—* Offer 1—1 OfferOption
+User 1—* Inquiry
+User 1—* Invoice *—1 Order *—1 Customer
+Customer 1—* Offer *—* ProjectTeam (ManyToMany via ProjectTeam.offers / users)
+Customer 1—* Invoice 1—* Reminder
+Offer 1—* ActionLog (chronologischer Verlauf)
+Offer 1—1 Order 1—* ProductOrder *—1 Product
+Offer 1—* OfferItem / OfferAnswers (Konfigurations-Bausteine)
+PushSubscription *—1 User
+```
+
+Zentrale Entitäten (Auswahl) & Rolle:
+- `User`: Authentifizierung, Rollen, Notifications (Push, Slack optional) – besitzt Invoices, Inquiries, Timesheets.
+- `Customer`: Geschäftskunde/Endkunde – verknüpft mit Offers, Invoices, ActionLogs.
+- `Offer`: Kernobjekt für Angebotserstellung; enthält Kontext (JSON), Status-Felder, Preis-/Produktverweise.
+- `Order`: Folgeobjekt nach Angebotsannahme; Basis für Invoices.
+- `Invoice`: Abrechnung mit Positionen (posX Felder), Zahlungstracking, Mahnwesen via `Reminder`.
+- `ActionLog`: Chronologisches Journal (Statuswechsel, Aktivitäten, Kommunikation) – strukturierte Typen (`TYPE_CHOICES`).
+- `Product` & Kategorien (`ProductCategory`, `ProductSubCategory`): Katalogstruktur.
+- `ProjectTeam`: Team-/Ressourcengruppen, ordnet Users und Offers zu.
+- `PushSubscription`: Web Push Endpoint (subscription_keys) für Browser-Notifications.
+
+### 14.2 Technische Patterns
+- Verwendung von JSON Feldern (`context`, `roles`, `subscription_keys`) für flexible Schema-Erweiterung ohne invasive Migration.
+- Weitgehende Nutzung von Doctrine Collections & bidirektionalen Beziehungen (Achtung auf potentielle N+1 Queries – ggf. FetchJoins einsetzen).
+- Indexierung strategischer Spalten (z.B. `Offer.status`, `Offer.number`, `Invoice.date`) zur Beschleunigung typischer Filter.
+- Service Layer (nicht vollständig gezeigt) vermutlich unter `src/Service/` (Erweiterungspunkt: Caching, externe Integrationen, Mail, Slack, Push).
+
+### 14.3 Workflows (High-Level)
+Angebotsprozess:
+1. Inquiry (Anfrage) erfasst
+2. Offer erstellt (initialer Status / Kontext)
+3. Optionale ActionLogs (Material fehlt, Notizen, Telefon, gesendet)
+4. Angebot angenommen → Order erzeugt
+5. Order → Invoice(n) generiert
+6. Reminder (Mahnung) bei fehlender Zahlung
+
+Push Notification Flow:
+1. Browser registriert Service Worker & sendet Subscription an Backend (`PushSubscription`)
+2. Backend speichert `subscription_keys`
+3. Ereignis (z.B. neue Nachricht / Statuswechsel) → Service erzeugt WebPush Nachricht
+4. Versand über `minishlink/web-push` mit VAPID Keys
+
+### 14.4 Skalierung / Performance Überlegungen
+- Caching Layer (Symfony Cache / Redis) einführbar für häufige Lese-Queries (Offers, Products).
+- Messenger kann für asynchrone Tasks (PDF-Erzeugung, größere E-Mail Batches, Push Versand) erweitert werden.
+- DB Sharding nicht nötig initial; sinnvolle Indizes erweitern (z.B. kombinierte Indexe für häufige Dashboard Filter: status_date + status).
+- Asset Bundling Production Mode (`npm run build`) liefert Tree Shaking & Minimierung.
+
+### 14.5 Erweiterungs-Ideen
+- Audit Trail via Listener für kritische Entitäten (Offer, Invoice)
+- Soft Deletes (Timestamp) statt physischem Löschen (aktuell `deleteIt` Flag bei Offer – könnte vereinheitlicht werden)
+- Mehrstufige Angebotsfreigabe (Approval Workflow) per State Machine (`symfony/workflow` Bundle)
+- Volltextsuche (Elasticsearch / OpenSearch) auf Offer/Customer Notizen
+- API Layer (API Platform) für externe Integrationen
+- Frontend Modernisierung (Inertia.js / Vue / React) falls mehr Interaktivität nötig
+
+### 14.6 Qualitäts-Gates Empfehlung
+In CI Pipeline integrieren:
+```bash
+php -d memory_limit=-1 vendor/bin/phpstan analyse --memory-limit=1G
+vendor/bin/php-cs-fixer fix --dry-run --diff
+vendor/bin/rector process --dry-run
+php bin/phpunit --testdox
+```
+
+### 14.7 Security Hinweise
+- Passwörter: Nutzen Symfony Password Hasher (nicht plain speichern). Prüfen ob Migrations alte Hashverfahren enthalten.
+- CSRF & SameSite Cookies aktiv halten; `APP_SECRET` regelmäßig rotieren (mit Rolling Strategy).
+- Rate Limiting für Login-Endpunkte (Symfony RateLimiter Component ergänzen).
+- Content Security Policy Header via EventSubscriber setzen.
+
+### 14.8 Observability
+- Aktivierung von `monolog` Kanal-Routing (separate Kanäle für Doctrine Slow Queries, Push, Mail).
+- Optionale Integration: Sentry für Exceptions, OpenTelemetry für Traces.
+
+
 ## 15. Sicherheit / Secrets
 - Keine echten Secrets committen (`.env.local` ist in `.gitignore`).
 - Für Produktion: Env Variablen über Server / Orchestrierung setzen.
