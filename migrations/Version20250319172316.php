@@ -22,7 +22,7 @@ final class Version20250319172316 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE TABLE push_subscription (id INT AUTO_INCREMENT NOT NULL, user_id INT DEFAULT NULL, endpoint VARCHAR(255) NOT NULL, `keys` JSON NOT NULL COMMENT \'(DC2Type:json)\', INDEX IDX_562830F3A76ED395 (user_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE push_subscription ADD CONSTRAINT FK_562830F3A76ED395 FOREIGN KEY (user_id) REFERENCES user (id)');
-        $this->addSql('ALTER TABLE push_subscription MODIFY COLUMN keys JSON;');
+    // Entfernt: ALTER TABLE push_subscription MODIFY COLUMN keys JSON; (unnötig & fehlerhaft unter MariaDB)
 //        $this->addSql('ALTER TABLE customer CHANGE roles roles JSON NOT NULL COMMENT \'(DC2Type:json)\'');
 //        $this->addSql('ALTER TABLE inquiry CHANGE context context JSON DEFAULT NULL COMMENT \'(DC2Type:json)\'');
 //        $this->addSql('ALTER TABLE invoice CHANGE context context JSON DEFAULT NULL COMMENT \'(DC2Type:json)\'');
@@ -40,7 +40,7 @@ final class Version20250319172316 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE push_subscription DROP FOREIGN KEY FK_562830F3A76ED395');
         $this->addSql('DROP TABLE push_subscription');
-        $this->addSql('ALTER TABLE push_subscription MODIFY COLUMN keys JSON;');
+    // Kein Re-Add des fehlerhaften Statements
 //        $this->addSql('ALTER TABLE reminder CHANGE context context JSON DEFAULT NULL COMMENT \'(DC2Type:json)\'');
 //        $this->addSql('ALTER TABLE settings CHANGE app_active_log app_active_log JSON DEFAULT NULL COMMENT \'(DC2Type:json)\', CHANGE data data JSON DEFAULT NULL COMMENT \'(DC2Type:json)\'');
 //        $this->addSql('ALTER TABLE offer_option CHANGE context context JSON DEFAULT NULL COMMENT \'(DC2Type:json)\'');

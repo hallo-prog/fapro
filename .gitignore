@@ -1,0 +1,21 @@
+# Composer
+/vendor/
+/composer.phar
+
+# Symfony cache & logs
+/var/cache/
+/var/log/
+
+# Env overrides
+.env.local
+.vapid-keys.txt
+
+# Node
+/node_modules/
+/public/build/
+
+# Misc
+/.idea/
+/.vscode/
+/.phpunit.result.cache
+/php-errors.log
